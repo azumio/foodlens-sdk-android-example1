@@ -1,0 +1,5 @@
+include ':app'
+rootProject.name = "AI Camera Example"
+
+include ':foodLensLibrary'
+project(':foodLensLibrary').projectDir = new File(settingsDir, '../foodlens-sdk-android-public')
