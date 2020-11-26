@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.azumio.android.foodlenslibrary.FoodLens
 import com.azumio.android.foodlenslibrary.example1.R
@@ -85,14 +86,17 @@ class AIActivity : AppCompatActivity() {
                     object : TypeToken<TokenResponse>() {}.type
                 val tokenResponse = gson.fromJson<TokenResponse>(json,gsonType)
                 runOnUiThread {
-                    FoodLens.authorizedInstance(
-                        tokenResponse.accessToken,
-                        onAuthorized = { foodLens: FoodLens?, exception: Exception? ->
-                            foodLens?.launchCameraActivityForResult(this@AIActivity)
-                            btn_ai_camera.isEnabled = true
+                    tokenResponse.error?.let {
+                        Toast.makeText(this@AIActivity,"token error",Toast.LENGTH_LONG).show()
+                    } ?: kotlin.run {
+                        FoodLens.authorizedInstance(
+                            tokenResponse.accessToken,
+                            onAuthorized = { foodLens: FoodLens?, exception: Exception? ->
+                                foodLens?.launchCameraActivityForResult(this@AIActivity)
+                                btn_ai_camera.isEnabled = true
 
-                        })
-
+                            })
+                    }
                     progress.hide()
                 }
 
@@ -127,7 +131,16 @@ class AIActivity : AppCompatActivity() {
     }
     data class TokenResponse(
         @SerializedName("access_token")
-        val accessToken: String
+        val accessToken: String,
+        @SerializedName("error")
+     val error: TokenError?
+    )
+    data class TokenError(
+        @SerializedName("code")
+        val errorCode: Int,
+        @SerializedName("errorDetail")
+        val errorDetail: String
+
     )
 }
 

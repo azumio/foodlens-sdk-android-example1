@@ -1,4 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+def githubProperties = new Properties()
+print(rootProject.file("github.properties"))
+githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
 buildscript {
     ext.kotlin_version = "1.3.72"
     repositories {
@@ -21,7 +24,15 @@ allprojects {
         google()
         jcenter()
         maven {
+            name = "GitHubPackages"
             url = "https://maven.pkg.github.com/azumio/foodlenslibrary"
+            credentials {
+                /** Create github.properties in root project folder file with
+                 ** gpr.usr=GITHUB_USER_ID & gpr.key=PERSONAL_ACCESS_TOKEN
+                 ** Or set env variable GPR_USER & GPR_API_KEY if not adding a properties file**/
+                username = githubProperties['gpr.usr'] ?: System.getenv("GPR_USER")
+                password = githubProperties['gpr.key'] ?: System.getenv("GPR_API_KEY")
+            }
         }
     }
 }

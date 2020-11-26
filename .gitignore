@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 /gradle/publish_github.gradle
+/github.properties
